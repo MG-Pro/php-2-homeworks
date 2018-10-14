@@ -48,6 +48,7 @@ function getNames($arr, $pos) {
   }
   return $result;
 }
+
 $firsNamelist = getNames($twoWordsName, 0);
 $secondNamelist = getNames($twoWordsName, 1);
 shuffle($secondNamelist);
@@ -92,10 +93,11 @@ print_r($randNames);
 
 foreach ($animals as $key => $item) {
   echo "<h2>$key</h2>";
-  foreach ($item as $animal) {
+  foreach ($item as $num => $animal) {
     $index = find($randNames, explode(' ', $animal)[0]);
     if($index !== null) {
-      echo "<p>$randNames[$index]</p>";
+      $comma = ($num === count($item) - 1) ? '' : ',';
+      echo "<p>$randNames[$index]" . "$comma" . "</p>";
     }
   }
 }
