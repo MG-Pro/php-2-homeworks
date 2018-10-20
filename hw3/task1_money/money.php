@@ -35,7 +35,7 @@ if($argv[1] === '--today') {
 $data = [];
 $data[] = $today;
 $data[] = (int)$argv[1];
-$data[] = trim(implode(' ', array_slice($argv, 2)));;
+$data[] = trim(implode(' ', array_slice($argv, 2)));
 
 $fp = fopen('money.csv', 'a+');
 fputcsv($fp, $data);
