@@ -36,26 +36,20 @@ $twoWordsName = [];
 
 foreach ($animals as $item) {
   foreach ($item as $name) {
-    if(count(explode(' ', $name)) >= 2) {
-      $twoWordsName[] = trim($name);
+    $count = count(explode(' ', $name));
+    if($count >= 2 && $count < 3) {
+      $twoWordsName[] = $name;
+      $firstNamelist[] = explode(' ', $name)[0];
+      $secondNamelist[] = explode(' ', $name)[1];
     }
   }
 }
 
-function getNames($arr, $pos) {
-  foreach ($arr as $name) {
-    $result[] = explode(' ', $name)[$pos];
-  }
-  return $result;
-}
-
-$firsNamelist = getNames($twoWordsName, 0);
-$secondNamelist = getNames($twoWordsName, 1);
 shuffle($secondNamelist);
-shuffle($firsNamelist);
+shuffle($firstNamelist);
 $randNames = [];
 
-foreach ($firsNamelist as $key => $name) {
+foreach ($firstNamelist as $key => $name) {
   $randNames[] = $name . ' ' . $secondNamelist[$key];
 }
 
@@ -68,6 +62,16 @@ function find($arr, $str) {
   }
 }
 
+$fakeAnimals = [];
+
+foreach ($animals as $key => $item) {
+  foreach ($item as $num => $animal) {
+    $index = find($randNames, explode(' ', $animal)[0]);
+    if($index !== null) {
+      $fakeAnimals[$key][] = $randNames[$index];
+    }
+  }
+}
 ?>
 <!doctype html>
 <html lang="en">
@@ -91,15 +95,9 @@ print_r($randNames);
 
 // ex. t1
 
-foreach ($animals as $key => $item) {
+foreach ($fakeAnimals as $key => $item) {
   echo "<h2>$key</h2>";
-  foreach ($item as $num => $animal) {
-    $index = find($randNames, explode(' ', $animal)[0]);
-    if($index !== null) {
-      $comma = ($num === count($item) - 1) ? '' : ',';
-      echo "<p>$randNames[$index]" . "$comma" . "</p>";
-    }
-  }
+  echo implode(', ', $item) . '.';
 }
 ?>
 </body>
