@@ -1,0 +1,90 @@
+[
+  {
+    "id": 1,
+    "question": "Одиннадцатый месяц года – это:",
+    "answers": [
+      {
+        "answer": "октябрь",
+        "isTrue": false
+      },
+      {
+        "answer": "май",
+        "isTrue": false
+      },
+      {
+        "answer": "ноябрь",
+        "isTrue": true
+      },
+      {
+        "answer": "февраль",
+        "isTrue": false
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "question": "«Суровый» является противоположным по значению слову:",
+    "answers": [
+      {
+        "answer": "резкий",
+        "isTrue": false
+      },
+      {
+        "answer": "строгий",
+        "isTrue": false
+      },
+      {
+        "answer": "мягкий",
+        "isTrue": true
+      },
+      {
+        "answer": "неподатливый",
+        "isTrue": false
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "question": "Какое из приведенных ниже слов отлично от других:",
+    "answers": [
+      {
+        "answer": "определенный",
+        "isTrue": false
+      },
+      {
+        "answer": "сомнительный",
+        "isTrue": true
+      },
+      {
+        "answer": "уверенный",
+        "isTrue": false
+      },
+      {
+        "answer": "доверие",
+        "isTrue": false
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "question": " Какое из приведенных ниже слов относится к слову «жевать» как обоняние и нос:",
+    "answers": [
+      {
+        "answer": "сладкий",
+        "isTrue": false
+      },
+      {
+        "answer": "язык",
+        "isTrue": false
+      },
+      {
+        "answer": "запах",
+        "isTrue": false
+      },
+      {
+        "answer": "зубы",
+        "isTrue": true
+      }
+    ]
+  }
+]
