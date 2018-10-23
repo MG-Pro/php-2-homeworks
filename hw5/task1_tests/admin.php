@@ -1,21 +1,31 @@
 <?php
-header('Location: /list.php');
-exit;
+$isLoaded = false;
 
-$file = $_FILES['file'];
-print_r($file);
-if ($file['type'] !== 'application/json') {
-  exit('Загрузите файл в формате JSON');
+if (count($_FILES) !== 0) {
+  $file = $_FILES['file'];
+
+  if ($file['type'] !== 'application/json') {
+    exit('Загрузите файл в формате JSON');
+  }
+
+  $fileList = glob('*.json');
+  var_dump($file);
+  foreach ($fileList as $item) {
+    if($item = $file['name']) {
+      exit("Файл с именем $item уже записан");
+    }
+  }
+
+
+  $res = move_uploaded_file($file['tmp_name'], __DIR__ . "/tmp/testList.json");
+
+  if (!$res) {
+    exit('Ошибка записи файла');
+  } else {
+    $isLoaded = true;
+  }
 }
 
-$res = move_uploaded_file($file['tmp_name'], __DIR__  . "/tmp/testList.json");
-
-if(!$res) {
-  exit('Ошибка записи файла');
-} else {
-  header('Location: /list.php');
-  exit;
-}
 ?>
 <!doctype html>
 <html lang="en">
@@ -27,9 +37,14 @@ if(!$res) {
   <title>Admin</title>
 </head>
 <body>
-<form action="list.php" enctype="multipart/form-data" method="post">
-  <input type="file" name="file">
-  <button>Send</button>
-</form>
+<?php if (!$isLoaded): ?>
+  <form action="admin.php" enctype="multipart/form-data" method="post">
+    <input type="file" name="file">
+    <button>Send</button>
+  </form>
+<?php endif; ?>
+<?php if ($isLoaded): ?>
+  <h2><?php echo "Файл успешно загружен" ?></h2>
+<?php endif; ?>
 </body>
 </html>
