@@ -1,17 +1,23 @@
 <?php
+$fileList = glob('tmp/*.json');
+$msg = '';
+if(count($fileList) === 0) {
+  $msg = 'Нет ни одного теста :(';
+} else {
+  $data = [];
+  foreach ($fileList as $item) {
+    $name = basename($item);
+    $json = file_get_contents(__DIR__  . "/tmp/$name");
+    $jsonData = json_decode($json, true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+      $msg = "Не валидный JSON ($name)!";
+    } else {
+      $jsonData['fileName'] = $name;
+      $data[] = $jsonData;
+    }
 
-
-$json = file_get_contents(__DIR__  . "/tmp/testList.json");
-
-$data = json_decode($json, true);
-
-if (json_last_error() !== JSON_ERROR_NONE) {
-  exit('Не валидный JSON!');
+  }
 }
-
-
-
-
 ?>
 <!doctype html>
 <html lang="en">
@@ -25,8 +31,9 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 <body>
   <ol>
   <?php foreach ($data as $question) { ?>
-    <li><b><a href="test.php&id=<?php echo $question['id'] ?>"><?php echo $question['question'] ?></a></b></li>
+    <li><b><a href="test.php?filename=<?php echo $question['fileName'] ?>"><?php echo $question['name'] ?></a></b></li>
   <?php } ?>
   </ol>
+<h4><?php echo $msg ?></h4>
 </body>
 </html>

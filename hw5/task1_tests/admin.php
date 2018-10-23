@@ -1,28 +1,34 @@
 <?php
-$isLoaded = false;
-
+$msg = '';
 if (count($_FILES) !== 0) {
   $file = $_FILES['file'];
+  $name = $file['name'];
+
 
   if ($file['type'] !== 'application/json') {
-    exit('Загрузите файл в формате JSON');
+    $msg = 'Загрузите файл в формате JSON';
   }
 
-  $fileList = glob('*.json');
-  var_dump($file);
-  foreach ($fileList as $item) {
-    if($item = $file['name']) {
-      exit("Файл с именем $item уже записан");
+  function find($arr, $str) {
+    foreach ($arr as $value) {
+      $isInc = strpos(basename($value), $str);
+      if($isInc !== false) {
+        return true;
+      }
     }
+    return false;
   }
 
-
-  $res = move_uploaded_file($file['tmp_name'], __DIR__ . "/tmp/testList.json");
-
-  if (!$res) {
-    exit('Ошибка записи файла');
+  $fileList = glob('tmp/*.json');
+  if(find($fileList, $file['name'])) {
+    $msg = "Файл с именем $name уже записан";
   } else {
-    $isLoaded = true;
+    $res = move_uploaded_file($file['tmp_name'], __DIR__ . "/tmp/" . $file['name']);
+    if (!$res) {
+      $msg = 'Ошибка записи файла';
+    } else {
+      $msg = "Файл $name успешно загружен";
+    }
   }
 }
 
@@ -37,14 +43,10 @@ if (count($_FILES) !== 0) {
   <title>Admin</title>
 </head>
 <body>
-<?php if (!$isLoaded): ?>
   <form action="admin.php" enctype="multipart/form-data" method="post">
     <input type="file" name="file">
     <button>Send</button>
   </form>
-<?php endif; ?>
-<?php if ($isLoaded): ?>
-  <h2><?php echo "Файл успешно загружен" ?></h2>
-<?php endif; ?>
+  <h4><?php echo $msg ?></h4>
 </body>
 </html>
