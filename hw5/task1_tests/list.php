@@ -1,10 +1,10 @@
 <?php
 $fileList = glob('tmp/*.json');
 $msg = '';
+$data = [];
 if(count($fileList) === 0) {
   $msg = 'Нет ни одного теста :(';
 } else {
-  $data = [];
   foreach ($fileList as $item) {
     $name = basename($item);
     $json = file_get_contents(__DIR__  . "/tmp/$name");

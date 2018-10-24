@@ -4,7 +4,6 @@ if (count($_FILES) !== 0) {
   $file = $_FILES['file'];
   $name = $file['name'];
 
-
   if ($file['type'] !== 'application/json') {
     $msg = 'Загрузите файл в формате JSON';
   }
