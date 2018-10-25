@@ -1,17 +1,20 @@
 <?php
-if(empty($argv[1]) or !$argv[1] === '–today' && count($argv) < 3) {
+if (empty($argv[1]) or !$argv[1] === '–today' && count($argv) < 3) {
   exit('Ошибка! Аргументы не заданы. Укажите флаг --today или запустите скрипт с аргументами {цена} и {описание покупки}');
 }
 
 $today = date('Y-m-d');
 
-if($argv[1] === '--today') {
+if ($argv[1] === '--today') {
+  if (file_exists('money.csv')) {
+    exit('Файл с ланными отсутствует');
+  }
+
   $fp = fopen('money.csv', 'r');
   $fileData = [];
-  while(!feof($fp))
-  {
+  while (!feof($fp)) {
     $fileStr = fgetcsv($fp);
-    if($fileStr != false) {
+    if ($fileStr != false) {
       $fileData[] = $fileStr;
     }
   }
@@ -20,8 +23,8 @@ if($argv[1] === '--today') {
   $count = 0;
 
   foreach ($fileData as $item) {
-    if((strtotime($today) === strtotime($item[0]))) {
-      $count += (int)$item[1];
+    if ((strtotime($today) === strtotime($item[0]))) {
+      $count += (int) $item[1];
     }
   }
   if ($count === 0) {
@@ -34,7 +37,7 @@ if($argv[1] === '--today') {
 
 $data = [];
 $data[] = $today;
-$data[] = (int)$argv[1];
+$data[] = (int) $argv[1];
 $data[] = trim(implode(' ', array_slice($argv, 2)));
 
 $fp = fopen('money.csv', 'a+');
