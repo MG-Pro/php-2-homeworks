@@ -1,7 +1,7 @@
 <?php
-define("URL", 'https://www.googleapis.com/books/v1/volumes?q=');
+define('URL', 'https://www.googleapis.com/books/v1/volumes?q=');
 if(count($argv) < 2) {
-  exit("Введите название книги");
+  exit('Введите название книги');
 }
 
 $query = urlencode(trim(implode(' ', array_slice($argv, 1))));
