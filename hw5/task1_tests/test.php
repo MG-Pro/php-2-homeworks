@@ -77,7 +77,7 @@ if (array_key_exists('filename', $_GET)) {
             type="radio"
             name="<?php echo $question['id'] ?>"
             value="<?php echo $answer['answer'] ?>"
-<!--            required-->
+            required
           >
           <?php echo $answer['answer'] ?>
         </label>
