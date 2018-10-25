@@ -25,30 +25,33 @@ function findTrue($arr) {
   }
   return false;
 }
-
+$result = [];
 if (array_key_exists('filename', $_GET)) {
   $data = getFileData($_GET['filename']);
-  $result = [];
+
 } elseif (array_key_exists('filename', $_POST)) {
   $data = getFileData($_POST['filename']);
   $post = $_POST;
   unset($post['filename']);
 
-  $result = [];
-  foreach ($post as $i => $userAnswer) {
-    $trueAnswer = findTrue($data[(int)$i - 1]['answers']);
-    $result[] = [
-      'question' => $data[(int)$i - 1]['question'],
-      'userAnswer' => $userAnswer,
-      'trueAnswer' => $trueAnswer['answer'],
-      'isTrue' => $userAnswer === $trueAnswer['answer'] ? 'true' : 'false'
-    ];
+  if(count($data) !== count($post)) {
+    $msg = 'Выбраны не все ответы';
+  } else {
+    foreach ($post as $i => $userAnswer) {
+      $trueAnswer = findTrue($data[(int)$i - 1]['answers']);
+      $result[] = [
+        'question' => $data[(int)$i - 1]['question'],
+        'userAnswer' => $userAnswer,
+        'trueAnswer' => $trueAnswer['answer'],
+        'isTrue' => $userAnswer === $trueAnswer['answer'] ? 'true' : 'false'
+      ];
+    }
+    $data = [];
   }
-  $data = [];
+
 } else {
   $msg = 'Нет данных';
   $data = [];
-  $result = [];
 }
 
 
@@ -71,11 +74,10 @@ if (array_key_exists('filename', $_GET)) {
       <?php foreach ($question['answers'] as $answer) { ?>
         <label>
           <input
-            id="<?php echo $question['id'] ?>"
             type="radio"
             name="<?php echo $question['id'] ?>"
             value="<?php echo $answer['answer'] ?>"
-            required
+<!--            required-->
           >
           <?php echo $answer['answer'] ?>
         </label>

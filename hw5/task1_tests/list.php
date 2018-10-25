@@ -2,12 +2,12 @@
 $fileList = glob('tmp/*.json');
 $msg = '';
 $data = [];
-if(count($fileList) === 0) {
+if (count($fileList) === 0) {
   $msg = 'Нет ни одного теста :(';
 } else {
   foreach ($fileList as $item) {
     $name = basename($item);
-    $json = file_get_contents(__DIR__  . "/tmp/$name");
+    $json = file_get_contents(__DIR__ . "/tmp/$name");
     $jsonData = json_decode($json, true);
     if (json_last_error() !== JSON_ERROR_NONE) {
       $msg = "Не валидный JSON ($name)!";
@@ -29,11 +29,15 @@ if(count($fileList) === 0) {
   <title>List</title>
 </head>
 <body>
-  <ol>
+<header>
+  <a href="admin.php">Загрузка тестов</a>
+</header>
+<hr>
+<ol>
   <?php foreach ($data as $question) { ?>
     <li><b><a href="test.php?filename=<?php echo $question['fileName'] ?>"><?php echo $question['name'] ?></a></b></li>
   <?php } ?>
-  </ol>
+</ol>
 <h4><?php echo $msg ?></h4>
 </body>
 </html>

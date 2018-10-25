@@ -11,7 +11,7 @@ if (count($_FILES) !== 0) {
   function find($arr, $str) {
     foreach ($arr as $value) {
       $isInc = strpos(basename($value), $str);
-      if($isInc !== false) {
+      if ($isInc !== false) {
         return true;
       }
     }
@@ -19,7 +19,7 @@ if (count($_FILES) !== 0) {
   }
 
   $fileList = glob('tmp/*.json');
-  if(find($fileList, $file['name'])) {
+  if (find($fileList, $file['name'])) {
     $msg = "Файл с именем $name уже записан";
   } else {
     $res = move_uploaded_file($file['tmp_name'], __DIR__ . "/tmp/" . $file['name']);
@@ -42,10 +42,14 @@ if (count($_FILES) !== 0) {
   <title>Admin</title>
 </head>
 <body>
-  <form action="admin.php" enctype="multipart/form-data" method="post">
-    <input type="file" name="file">
-    <button>Send</button>
-  </form>
-  <h4><?php echo $msg ?></h4>
+<header>
+  <a href="list.php">Список тестов</a>
+</header>
+<hr>
+<form action="admin.php" enctype="multipart/form-data" method="post">
+  <input type="file" name="file">
+  <button>Send</button>
+</form>
+<h4><?php echo $msg ?></h4>
 </body>
 </html>
