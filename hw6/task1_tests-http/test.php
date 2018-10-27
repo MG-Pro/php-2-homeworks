@@ -47,7 +47,7 @@ if (array_key_exists('filename', $_GET)) {
         'isTrue'     => $userAnswer === $trueAnswer['answer'] ? 'true' : 'false'
       ];
       $resIndex = count($result) - 1;
-      $resultStr .= $result[$resIndex]['question'] . '\n Результат: ' . $result[$resIndex]['isTrue'] . ';';
+      $resultStr .= $result[$resIndex]['question'] . '\n Результат: ' . $result[$resIndex]['isTrue'] . '\n';
     }
     $data = [];
   }
