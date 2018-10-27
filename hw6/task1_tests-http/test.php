@@ -3,9 +3,14 @@ $msg = '';
 
 function getFileData($filename) {
   global $msg;
+  if (!file_exists($filename)) {
+    header("HTTP/1.0 404 Not Found");
+    exit('Файл с ланными отсутствует');
+  }
   $json = file_get_contents(__DIR__ . "/tmp/$filename");
   if ($json === false) {
     $msg = 'Файл не найден';
+    exit();
   } else {
     $jsonData = json_decode($json, true);
     if (json_last_error() !== JSON_ERROR_NONE) {
@@ -47,7 +52,7 @@ if (array_key_exists('filename', $_GET)) {
         'isTrue'     => $userAnswer === $trueAnswer['answer'] ? 'true' : 'false'
       ];
       $resIndex = count($result) - 1;
-      $resultStr .= $result[$resIndex]['question'] . '\n Результат: ' . $result[$resIndex]['isTrue'] . '\n';
+      $resultStr .= 'Вопрос №' . $i . ': ' . $result[$resIndex]['isTrue'] . ';';
     }
     $data = [];
   }

@@ -2,20 +2,22 @@
 
 header("Content-type: image/png");
 $string = $_GET['result'];
-// $string =  iconv('windows-1251','utf-8', $string);
-// $arr = explode(' ', $string);
 
+$arr = explode(';', $string);
 
-$im = imagecreatetruecolor(700, 320);
+$im = imagecreatetruecolor(180, count($arr) * 20);
 
 $text_color = imagecolorallocate($im, 67, 126, 177);
 $bg = imagecolorallocate($im, 255, 0, 0);
-// imagefill($im, 1, 1, $bg);
 
-// imagestring($im, 2, 5, 5,  $string, $text_color);
-// putenv('GDFONTPATH=' . realpath('.'));
-$font='C:\Repositories\php-2-homeworks\hw6\task1_tests-http\arial.ttf';
+$font = __DIR__ . '\arial.ttf';
+$i = 20;
 
-$res = imagettftext($im, 14, 0, 5, 20, $text_color, $font, $string);
+foreach ($arr as $item) {
+  $item = wordwrap($item, 80);
+  $res = imagettftext($im, 14, 0, 5, $i, $text_color, $font, $item);
+  $i += 30;
+}
+
 imagepng($im);
 imagedestroy($im);
