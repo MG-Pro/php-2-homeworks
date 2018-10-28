@@ -4,7 +4,7 @@ $msg = '';
 function getFileData($filename) {
   global $msg;
   if (!file_exists($filename)) {
-    header("HTTP/1.0 404 Not Found");
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
     exit('Файл с ланными отсутствует');
   }
   $json = file_get_contents(__DIR__ . "/tmp/$filename");
@@ -30,20 +30,26 @@ function findTrue($arr) {
   }
   return false;
 }
+
 $resultStr = '';
 $result = [];
+$userName = 'Samebody';
+
 if (array_key_exists('filename', $_GET)) {
   $data = getFileData($_GET['filename']);
-
 } elseif (array_key_exists('filename', $_POST)) {
   $data = getFileData($_POST['filename']);
   $post = $_POST;
   unset($post['filename']);
 
-  if (count($data) !== count($post)) {
+  if (count($data) !== count($post) && !isset($post['name'])) {
     $msg = 'Выбраны не все ответы';
   } else {
     foreach ($post as $i => $userAnswer) {
+      if($i === 'name') {
+        $userName = $userAnswer;
+        continue;
+      }
       $trueAnswer = findTrue($data[ (int) $i - 1 ]['answers']);
       $result[] = [
         'question'   => $data[ (int) $i - 1 ]['question'],
@@ -93,11 +99,14 @@ if (array_key_exists('filename', $_GET)) {
       <br>
     <?php } ?>
     <br>
+    Введите имя: <input type="text" name="name" required>
+    <br>
     <button>Send</button>
   </form>
 <?php endif; ?>
 <?php if (count($result) !== 0): ?>
   <h4>Результат</h4>
+  <p>Имя: <b><?php echo $userName ?></b></p>
   <?php foreach ($result as $item) { ?>
     <span><b>Вопрос:</b> <?php echo $item['question'] ?></span> <br>
     <span><b>Результат:</b> <?php echo $item['isTrue'] ?></span>
@@ -107,7 +116,7 @@ if (array_key_exists('filename', $_GET)) {
     </div>
     <hr>
   <?php } ?>
-  <img src="img.php?result=<?php echo $resultStr?>" alt="">
+  <img src="img.php?name=<?php echo $userName?>&result=<?php echo $resultStr?>" alt="">
 <?php endif; ?>
 <h4><?php echo $msg ?></h4>
 </body>
