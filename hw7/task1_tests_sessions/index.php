@@ -9,7 +9,7 @@ if (isset($_POST['name'])) {
       header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized');
       $msg = 'Нет такого пользователя! :(';
     } else {
-      if (!isset($_SESSION['name'])) {
+      if (!isset($_SESSION['name']) || $_SESSION['role'] !== 'admin') {
         $file = file_get_contents($userName . '.json', true);
         $user = json_decode($file, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -17,11 +17,14 @@ if (isset($_POST['name'])) {
         } else {
           if ($user['name'] === $userName && $user['pas'] === $_POST['pas']) {
             $_SESSION['name'] = $_POST['name'];
+            $_SESSION['role'] = 'admin';
             header('Location: admin.php');
           } else {
             $msg = "Данные о пользователе $userName и пароль не совпадают!";
           }
         }
+      } else {
+        header('Location: admin.php');
       }
     }
   } else {
@@ -31,6 +34,7 @@ if (isset($_POST['name'])) {
   $guestName = $_POST['guestName'];
   if (strlen($guestName) >= 2) {
     $_SESSION['name'] = $guestName;
+    $_SESSION['role'] = 'guest';
     header('Location: list.php');
   } else {
     $msg = 'Введите гостевое имя';

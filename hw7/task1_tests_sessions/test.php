@@ -1,8 +1,8 @@
 <?php
 session_start();
-if (isset($_SESSION['name']) && $_SESSION['name'] === 'admin') {
+if (isset($_SESSION['name']) && $_SESSION['role'] === 'admin') {
   $isAdmin = true;
-} elseif (isset($_SESSION['guestName'])) {
+} elseif (isset($_SESSION['name']) && $_SESSION['role'] === 'guest') {
   $isAdmin = false;
 } else {
   header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized');
@@ -55,7 +55,7 @@ if (array_key_exists('filename', $_GET)) {
   if (count($data) !== count($post) && !isset($post['name'])) {
     $msg = 'Выбраны не все ответы';
   } else {
-    $userName = $_SESSION['name'] || $_SESSION['guestName'];
+    $userName = $_SESSION['name'];
     foreach ($post as $i => $userAnswer) {
       $trueAnswer = findTrue($data[ (int) $i - 1 ]['answers']);
       $result[] = [

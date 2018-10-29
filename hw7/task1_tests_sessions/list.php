@@ -1,9 +1,9 @@
 <?php
 session_start();
 
-if (isset($_SESSION['name']) && $_SESSION['name'] === 'admin') {
+if (isset($_SESSION['name']) && $_SESSION['role'] === 'admin') {
   $isAdmin = true;
-} elseif (isset($_SESSION['name'])) {
+} elseif (isset($_SESSION['name']) && $_SESSION['role'] === 'guest') {
   $isAdmin = false;
 } else {
   header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden');
@@ -14,11 +14,11 @@ if (isset($_SESSION['name']) && $_SESSION['name'] === 'admin') {
 $msg = '';
 
 if (isset($_GET['delFileName']) && $isAdmin) {
-  $fileName = $_GET['delFileName'];
-  if (!file_exists($fileName)) {
+  $path = __DIR__ . '/tmp/' . $_GET['delFileName'];
+  if (!file_exists($path)) {
     $msg = 'Файл ненайден';
   } else {
-    $res = unlink($fileName);
+    $res = unlink($path);
     if($res) {
       $msg = 'Файл с тестом успешно удален';
     } else {
@@ -66,7 +66,7 @@ if (count($fileList) === 0) {
 <ol>
   <?php foreach ($data as $question) { ?>
     <li>
-      <form action=".">
+      <form action="list.php">
         <b><a href="test.php?filename=<?php echo $question['fileName'] ?>"><?php echo $question['name'] ?></a></b>
         <?php if ($isAdmin) : ?>
           <input type="hidden" name="delFileName" value="<?php echo $question['fileName'] ?>">
