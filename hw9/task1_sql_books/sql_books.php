@@ -1,15 +1,13 @@
 <?php
-$pdo = new PDO("mysql:host=localhost;dbname=global;charset=UTF8", "root", "");
+// $pdo = new PDO("mysql:host=localhost;dbname=global;charset=UTF8", "root", "");
+$pdo = new PDO("mysql:host=localhost;dbname=global;charset=UTF8", "mgladkih", "neto1853");
 
-$author = $_GET['author'] ? $_GET['author'] : '%';
-$name = $_GET['name'] ? $_GET['name'] : '%';
-$isbn = $_GET['isbn'] ? $_GET['isbn'] : '%';
+$author = isset($_GET['author']) ? $_GET['author'] : '%';
+$name = isset($_GET['name']) ? $_GET['name'] : '%';
+$isbn = isset($_GET['isbn']) ? $_GET['isbn'] : '%';
 
-if($_GET['author']) {
-  $_GET['author'];
-}
 
-$sql = "SELECT * FROM books WHERE author=$author AND name=$name AND isbn=$isbn";
+$sql = "SELECT * FROM books WHERE author LIKE '%$author%' AND name LIKE '%$name%' AND isbn LIKE '%$isbn%'";
 $sth = $pdo->query($sql);
 $result = $sth->fetchAll(PDO::FETCH_ASSOC);
 
@@ -35,13 +33,14 @@ $result = $sth->fetchAll(PDO::FETCH_ASSOC);
   </style>
 </head>
 <body>
-<form method="GET" action=".">
-  <input type="text" name="isbn" placeholder="ISBN" value="">
-  <input type="text" name="name" placeholder="Название книги" value="">
-  <input type="text" name="author" placeholder="Автор книги" value="">
+<br>
+<form method="GET" action="sql_books.php">
+  <input type="text" name="isbn" placeholder="ISBN" value="<?php echo $author === '%' ? '' : $author?>">
+  <input type="text" name="name" placeholder="Название книги" value="<?php echo $name === '%' ? '' : $name?>">
+  <input type="text" name="author" placeholder="Автор книги" value="<?php echo $isbn === '%' ? '' : $isbn?>">
   <input type="submit" value="Поиск">
 </form>
-<br><br>
+<br>
 <table>
   <tr>
     <th>№</th>
