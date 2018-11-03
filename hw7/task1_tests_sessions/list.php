@@ -7,7 +7,7 @@ if (isset($_SESSION['name']) && $_SESSION['role'] === 'admin') {
   $isAdmin = false;
 } else {
   header($_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden');
-  header('Location: index.php');
+  header('Location: auth.php');
   exit;
 }
 

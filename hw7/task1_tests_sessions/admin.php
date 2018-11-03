@@ -2,7 +2,7 @@
 session_start();
 if (!isset($_SESSION['name']) || $_SESSION['role'] !== 'admin') {
   header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized');
-  header('Location: index.php');
+  header('Location: auth.php');
   exit;
 }
 $msg = '';
