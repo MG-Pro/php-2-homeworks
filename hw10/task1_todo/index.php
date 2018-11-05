@@ -1,38 +1,54 @@
 <?php
 session_start();
+if (isset($_SESSION['user']['login'])) {
+  header('Location: tasks.php');
+  exit;
+}
 $isSignIn = true;
 $msg = '';
 if (isset($_GET['signup'])) {
   $isSignIn = false;
 }
 
-if (isset($_POST['login']) && isset($_GET['formSignup'])) {
+if (isset($_POST['login'])) {
   $login = $_POST['login'];
   $pass = $_POST['pass'];
-  if (strlen($login) <= 3) {
+  if (strlen($login) < 3) {
     $msg = 'Логин должен быть не короче 3 символов' . "\n";
-  } elseif (strlen($pass) <= 3) {
+  } elseif (strlen($pass) < 3) {
     $msg .= 'Пароль должен быть не короче 3 символов' . "\n";
   } else {
     $pdo = new PDO("mysql:host=localhost;dbname=global;charset=UTF8", "root", "");
     // $pdo = new PDO("mysql:host=localhost;dbname=global;charset=UTF8", "mgladkih", "neto1853");
 
-    $sth = $pdo->query("SELECT id FROM user WHERE login='$login' LIMIT 1");
-    $result = $sth->fetchAll(PDO::FETCH_ASSOC);
-    if (count($result) !== 0) {
-      $msg = 'Пользователь с таким логином зарегистрирован';
-    } else {
-      $sql = "INSERT INTO user SET login='$login', password='$pass'";
+    if(isset($_GET['formSignup'])) {
+      $sth = $pdo->query("SELECT id FROM user WHERE login='$login' LIMIT 1");
+      $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+      if (count($result) !== 0) {
+        $msg = 'Пользователь с таким логином уже зарегистрирован';
+      } else {
+        $sql = "INSERT INTO user SET login='$login', password='$pass'";
+        $sth = $pdo->query($sql);
+        $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+        $sth = $pdo->query("SELECT @@IDENTITY");
+        $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+        $_SESSION['user'] = ['login' => $login, 'id' => $result[0]['@@IDENTITY']];
+        header('Location: tasks.php');
+        exit;
+      }
+    } elseif (isset($_GET['formSignin'])) {
+      $sql = "SELECT id, login FROM user WHERE login='$login' AND password='$pass' LIMIT 1";
       $sth = $pdo->query($sql);
       $result = $sth->fetchAll(PDO::FETCH_ASSOC);
-      $_SESSION['login'] = $login;
-      header('Location: tasks.php');
-      exit;
+      if (count($result) === 0) {
+        $msg = 'Неверный логин или пароль';
+      } else {
+        $_SESSION['user'] = $result[0];
+        header('Location: tasks.php');
+        exit;
+      }
     }
-
-
   }
-
 }
 
 
