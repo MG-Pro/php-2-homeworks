@@ -18,8 +18,8 @@ if (isset($_POST['login'])) {
   } elseif (strlen($pass) < 3) {
     $msg .= 'Пароль должен быть не короче 3 символов' . "\n";
   } else {
-    $pdo = new PDO("mysql:host=localhost;dbname=global;charset=UTF8", "root", "");
-    // $pdo = new PDO("mysql:host=localhost;dbname=global;charset=UTF8", "mgladkih", "neto1853");
+    // $pdo = new PDO("mysql:host=localhost;dbname=global;charset=UTF8", "root", "");
+    $pdo = new PDO("mysql:host=localhost;dbname=global;charset=UTF8", "mgladkih", "neto1853");
 
     if(isset($_GET['formSignup'])) {
       $sth = $pdo->query("SELECT id FROM user WHERE login='$login' LIMIT 1");

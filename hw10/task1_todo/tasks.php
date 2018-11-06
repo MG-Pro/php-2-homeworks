@@ -7,32 +7,81 @@ if (isset($_GET['signout'])) {
 }
 if (!isset($_SESSION['user']['login'])) {
   header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized');
+  exit();
+}
+// $pdo = new PDO("mysql:host=localhost;dbname=global;charset=UTF8", "root", "");
+$pdo = new PDO("mysql:host=localhost;dbname=global;charset=UTF8", "mgladkih", "neto1853");
+
+if (isset($_GET['toggleDone'])) {
+  $taskId = $_GET['toggleDone'];
+  $sqlDoneToggle = "UPDATE task SET is_done=NOT is_done WHERE id=$taskId LIMIT 1";
+  $sth = $pdo->query($sqlDoneToggle);
+  $sth->fetchAll(PDO::FETCH_ASSOC);
+  header('Location: tasks.php');
   exit;
 }
-$pdo = new PDO("mysql:host=localhost;dbname=global;charset=UTF8", "root", "");
-// $pdo = new PDO("mysql:host=localhost;dbname=global;charset=UTF8", "mgladkih", "neto1853");
+
+if (isset($_GET['delete'])) {
+  $taskId = $_GET['delete'];
+  $sqlDelTask = "DELETE FROM task WHERE id=$taskId LIMIT 1";
+  $sth = $pdo->query($sqlDelTask);
+  $sth->fetchAll(PDO::FETCH_ASSOC);
+  header('Location: tasks.php');
+  exit;
+}
 
 $sth = $pdo->query("SELECT id, login FROM user");
 $users = $sth->fetchAll(PDO::FETCH_ASSOC);
 $msg = '';
 $userId = $_SESSION['user']['id'];
+$desc = '';
 
 if (isset($_POST['add'])) {
   $desc = htmlspecialchars($_POST['desc']);
   if (strlen($desc) < 3 && strlen($desc) > 500) {
     $msg = 'Описание задачи не может быть пустым и длиннее 500 символов';
   } else {
-    $assignedUserId = $_POST['user'];
-    $sql = "INSERT INTO task SET user_id ='$userId', description='$desc', assigned_user_id='$assignedUserId', is_done=false, date_added=NOW()";
-    $sth = $pdo->query($sql);
+    $assignedUserId = strlen($_POST['user']) !== 0 ? $_POST['user'] : $userId;
+    $sqlAddTask = "INSERT INTO task SET user_id ='$userId', description='$desc', assigned_user_id='$assignedUserId', is_done=false, date_added=NOW()";
+    $sth = $pdo->query($sqlAddTask);
     $result = $sth->fetchAll(PDO::FETCH_ASSOC);
     $msg = 'Задача успешно добавлена';
     $desc = '';
+    header('Location: tasks.php');
+    exit;
   }
 }
 
-$sth = $pdo->query("SELECT date_added, description, is_done, assigned_user_id FROM task WHERE user_id='$userId' AND is_done=false ORDER BY date_added");
+if (isset($_POST['assignedUserId'])) {
+  $taskId = $_POST['taskId'];
+  $assignedUserId = $_POST['assignedUserId'];
+  $sqlChangeUser = "
+  UPDATE task 
+  SET assigned_user_id=$assignedUserId 
+  WHERE id=$taskId 
+  LIMIT 1";
+  $sth = $pdo->query($sqlChangeUser);
+  $sth->fetchAll(PDO::FETCH_ASSOC);
+  header('Location: tasks.php');
+  exit;
+}
+
+$sqlTaskList = "
+SELECT 
+  t.id as id, 
+  t.date_added as date_added, 
+  t.description as description, 
+  t.is_done as is_done, 
+  u.login as login 
+FROM task t 
+JOIN user u 
+ON t.assigned_user_id=u.id 
+WHERE t.user_id='$userId'
+ORDER BY t.date_added";
+
+$sth = $pdo->query($sqlTaskList);
 $tasks = $sth->fetchAll(PDO::FETCH_ASSOC);
+
 
 ?>
 <!doctype html>
@@ -50,7 +99,10 @@ $tasks = $sth->fetchAll(PDO::FETCH_ASSOC);
     }
     td, th {
       border: 1px solid;
-      padding: 3px;
+      padding: 3px 5px;
+    }
+    form {
+      margin: 0;
     }
   </style>
 </head>
@@ -89,25 +141,57 @@ $tasks = $sth->fetchAll(PDO::FETCH_ASSOC);
 <hr>
 <main>
   <h3>Список задач</h3>
-  <?php if(count($tasks) > 0): ?>
-  <table>
-    <thead>
-    <tr>
-      <?php foreach ($tasks[0] as $key => $item): ?>
-        <th><?php echo $key ?></th>
-      <?php endforeach; ?>
-    </tr>
-    </thead>
-    <tbody>
-    <?php foreach ($tasks as $task): ?>
+  <?php if (count($tasks) > 0): ?>
+    <table>
+      <thead>
       <tr>
-        <?php foreach ($task as $value): ?>
-          <td><?php echo $value ?></td>
-        <?php endforeach; ?>
+        <th>Дата добавления</th>
+        <th>Описание</th>
+        <th>Выполнение</th>
+        <th>Исполнитель</th>
+        <th>Делегировать</th>
+        <th>Действия</th>
       </tr>
-    <?php endforeach; ?>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+      <?php foreach ($tasks as $task): ?>
+        <tr>
+          <?php foreach ($task as $key => $value): ?>
+            <?php if ($key === 'id') continue; ?>
+            <td>
+              <?php
+              if ($key === 'date_added') {
+                echo date('d.m.Y H:i', strtotime($value));
+              } elseif ($key === 'is_done') {
+                $str = $value === '0' ? 'Выполнить' : 'Невыполнено';
+                $taskId = $task['id'];
+                echo "<a href='tasks.php?toggleDone=$taskId'>$str</a>";
+              } else {
+                echo $value;
+              }
+              ?>
+            </td>
+          <?php endforeach; ?>
+          <td>
+            <form action="tasks.php" method="post">
+              <input type="hidden" name="taskId" value="<?php echo $taskId ?>">
+              <select name="assignedUserId">
+                <?php foreach ($users as $user): ?>
+                  <option value="<?php echo $user['id'] ?>">
+                    <?php echo $user['login'] ?>
+                  </option>
+                <?php endforeach; ?>
+              </select>
+              <button>Изменить</button>
+            </form>
+          </td>
+          <td>
+            <a href="tasks.php?delete=<?php echo $taskId ?>">Удалить</a>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+      </tbody>
+    </table>
   <?php else: ?>
     <p>Пока нет задач</p>
   <?php endif; ?>
