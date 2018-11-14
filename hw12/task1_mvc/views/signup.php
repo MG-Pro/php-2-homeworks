@@ -1,6 +1,6 @@
 <header>
   <br>
-    <a href="index.php?user=signin">SignIp</a>
+    <a href="index.php?user=signin">SignIn</a>
   <hr>
   <br>
 </header>

@@ -1,6 +1,6 @@
 <header>
   <br>
-    <a href="index.php?user=signup">SignUn</a>
+    <a href="index.php?user=signup">SignUp</a>
   <hr>
   <br>
 </header>

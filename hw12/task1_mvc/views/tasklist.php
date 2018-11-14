@@ -7,6 +7,7 @@
   <hr>
 </header>
 <form action="index.php" method="post">
+  <input type="hidden" name="add">
   <fieldset>
     <legend>Новая задача</legend>
     <label>
@@ -25,7 +26,7 @@
       </select>
     </label>
     <br>
-    <button name="add">Сохранить</button>
+    <button>Сохранить</button>
   </fieldset>
 </form>
 <p><?php echo $msg ?></p>
@@ -56,7 +57,7 @@
               } elseif ($key === 'is_done') {
                 $str = $value === '0' ? 'Выполнить' : 'Невыполнено';
                 $taskId = $task['id'];
-                echo "<a href='tasks.php?toggleDone=$taskId'>$str</a>";
+                echo "<a href='index.php?task=toggleDone&id=$taskId'>$str</a>";
               } else {
                 echo $value;
               }
@@ -64,8 +65,8 @@
             </td>
           <?php endforeach; ?>
           <td>
-            <form action="tasks.php" method="post">
-              <input type="hidden" name="taskId" value="<?php echo $taskId ?>">
+            <form action="index.php" method="post">
+              <input type="hidden" name="update" value="<?php echo $taskId ?>">
               <select name="assignedUserId">
                 <?php foreach ($users as $user): ?>
                   <option value="<?php echo $user['id'] ?>">
@@ -77,7 +78,7 @@
             </form>
           </td>
           <td>
-            <a href="tasks.php?delete=<?php echo $taskId ?>">Удалить</a>
+            <a href="index.php?task=delete&id=<?php echo $taskId ?>">Удалить</a>
           </td>
         </tr>
       <?php endforeach; ?>

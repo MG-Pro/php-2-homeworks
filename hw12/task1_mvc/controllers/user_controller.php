@@ -1,10 +1,14 @@
 <?php
-$msg = '';
-if (isset($_GET['signout'])) {
-  $_SESSION = [];
+
+if (isset($_GET['user'])) {
+  if ($_GET['user'] === 'signout') {
+    $_SESSION = [];
+  }
 }
+
 include_once 'models/user_model.php';
 $userModel = new User($pdo);
+$msg = '';
 
 if (isset($_SESSION['user']['login'])) {
   $users = $userModel->getList();
@@ -44,7 +48,10 @@ if (isset($_SESSION['user']['login'])) {
     include 'views/signup.php';
   } elseif ($_GET['user'] === 'signin') {
     include 'views/signin.php';
+  } else {
+    include 'views/signin.php';
   }
+
 } else {
   include 'views/signin.php';
 }
