@@ -6,6 +6,19 @@ $pdo = new PDO(
   DB_LOGIN,
   DB_PASS);
 
-include_once 'views/main.php';
-include_once 'controllers/user_controller.php';
+
+function render($template, $params = []) {
+  $fileTemplate = 'views/' . $template;
+  if (is_file($fileTemplate)) {
+    ob_start();
+    if (count($params) > 0) {
+      extract($params);
+    }
+    include $fileTemplate;
+    echo ob_get_clean();
+  }
+}
+
+render('main.php');
+include_once 'router.php';
 include_once 'views/footer.php';

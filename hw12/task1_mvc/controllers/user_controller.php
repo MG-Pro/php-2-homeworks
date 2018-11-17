@@ -1,57 +1,62 @@
 <?php
 
-if (isset($_GET['user'])) {
-  if ($_GET['user'] === 'signout') {
+include_once 'models/user_model.php';
+
+class UserController {
+
+  public $msg = '';
+  private $userModel;
+  public function __construct($pdo) {
+    $this->userModel = new User($pdo);
+  }
+
+  public function signIn($login = null, $pass = null) {
+    if ($login !== null) {
+      $user = $this->userModel->signIn($login, $pass);
+      if (count($user) === 0) {
+        $this->msg = 'Неверный логин или пароль';
+        render('signin.php', ['msg'=> $this->msg]);
+      } else {
+        $_SESSION['user'] = $user[0];
+        return $user[0]['id'];
+      }
+    } else {
+      render('signin.php', ['msg' => $this->msg]);
+    }
+    return false;
+  }
+  public function signOut() {
     $_SESSION = [];
   }
-}
-
-include_once 'models/user_model.php';
-$userModel = new User($pdo);
-$msg = '';
-
-if (isset($_SESSION['user']['login'])) {
-  $users = $userModel->getList();
-  include 'controllers/task_controller.php';
-} elseif (isset($_POST['signin']) || isset($_POST['signup'])) {
-  $login = $_POST['login'];
-  $pass = $_POST['pass'];
-
-  if (isset($_POST['signup'])) {
-    if (strlen($login) < 3) {
-      $msg = 'Логин должен быть не короче 3 символов' . "\n";
-    } elseif (strlen($pass) < 3) {
-      $msg .= 'Пароль должен быть не короче 3 символов' . "\n";
-    } else {
-      $result = $userModel->checkLogin($login);
-      if (count($result) !== 0) {
-        $msg = 'Пользователь с таким логином уже зарегистрирован';
+  public function signUp($login = null, $pass = null) {
+    if($login !== null) {
+      if (strlen($login) < 3) {
+        $this->msg = 'Логин должен быть не короче 3 символов' . "\n";
+        render('signup.php', ['msg' => $this->msg]);
+      } elseif (strlen($pass) < 3) {
+        $this->msg .= 'Пароль должен быть не короче 3 символов' . "\n";
+        render('signup.php', ['msg' => $this->msg]);
       } else {
-        $userId = $userModel->signUp($login, $pass);
-        $_SESSION['user'] = ['login' => $login, 'id' => $result[0]['@@IDENTITY']];
-        $users = $userModel->getList();
-        include 'controllers/task_controller.php';
+        $result = $this->userModel->checkLogin($login);
+        if (count($result) !== 0) {
+          $this->msg = 'Пользователь с таким логином уже зарегистрирован';
+          render('signup.php', ['msg' => $this->msg]);
+        } else {
+          $res = $this->userModel->signUp($login, $pass);
+          $userId = $res[0]["@@IDENTITY"];
+          $_SESSION['user'] = ['login' => $login, 'id' => $userId];
+          return $userId;
+        }
       }
-    }
-  } elseif (isset($_POST['signin'])) {
-    $user = $userModel->signIn($login, $pass);
-    if (count($user) === 0) {
-      $msg = 'Неверный логин или пароль';
     } else {
-      $_SESSION['user'] = $user[0];
-      $users = $userModel->getList();
-      include 'controllers/task_controller.php';
+      render('signup.php', ['msg' => $this->msg]);
     }
+    return false;
   }
-} elseif (isset($_GET['user'])) {
-  if ($_GET['user'] === 'signup') {
-    include 'views/signup.php';
-  } elseif ($_GET['user'] === 'signin') {
-    include 'views/signin.php';
-  } else {
-    include 'views/signin.php';
+  public function getUserList() {
+    return $this->userModel->getList();
   }
 
-} else {
-  include 'views/signin.php';
 }
+
+

@@ -1,21 +1,31 @@
 <?php
 include_once 'models/task_model.php';
-$taskModel = new Task($pdo);
-$msg = '';
-$userId = $_SESSION['user']['id'];
-$desc = '';
 
-if(isset($_GET['task'])) {
-  $taskId = $_REQUEST['id'];
-  if ($_GET['task'] === 'toggleDone') {
-    $taskModel->toggleDone($taskId);
+class TaskController {
+  public $msg = '';
+  private $desc = '';
+  private $taskModel;
+  public function __construct($pdo) {
+    $this->taskModel = new Task($pdo);
+
   }
-  if ($_GET['task'] === 'delete') {
-    $taskModel->taskDelete($taskId);
+  public function getTaskList($userId, $users) {
+    $tasks = $this->taskModel->getList($userId);
+    render('tasklist.php', ['tasks'=>$tasks, 'users'=>$users, 'msg'=> $this->msg]);
   }
-  header('Location: index.php');
-  exit;
+  public function toggleDone($taskId) {
+    $this->taskModel->toggleDone($taskId);
+  }
+  public function taskDelete($taskId) {
+    $this->taskModel->taskDelete($taskId);
+  }
+  public function addTask($taskId, $desc) {
+    $this->taskModel->addTask($taskId, $desc);
+  }
 }
+
+
+
 
 if (isset($_POST['add'])) {
   $desc = htmlspecialchars($_POST['desc']);
@@ -36,6 +46,4 @@ if (isset($_POST['update'])) {
   $msg = 'Задача успешно обновлена';
 }
 
-$tasks = $taskModel->getList($userId);
 
-include 'views/tasklist.php';
