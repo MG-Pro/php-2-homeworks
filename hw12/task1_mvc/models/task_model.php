@@ -39,13 +39,16 @@ class Task {
     SELECT 
       t.id as id, 
       t.date_added as date_added, 
+      u.login as author_login,
       t.description as description, 
       t.is_done as is_done, 
-      u.login as login 
+      au.login as login
     FROM task t 
-    JOIN user u 
-    ON t.assigned_user_id=u.id 
-    WHERE t.user_id='$userId' OR t.assigned_user_id=$userId
+    JOIN user au 
+    ON t.assigned_user_id=au.id
+    JOIN user u
+    ON t.user_id=u.id
+    WHERE t.user_id='$userId' OR t.assigned_user_id='$userId'
     ORDER BY t.date_added";
     return $this->request($sqlTaskList)->fetchAll(PDO::FETCH_ASSOC);
   }

@@ -7,6 +7,7 @@ $taskController = new TaskController($pdo);
 if (isset($_GET['user'])) {
   if ($_GET['user'] === 'signout') {
     $userController->signOut();
+    $userController->signIn();
   } elseif ($_GET['user'] === 'signup') {
     $userController->signUp();
   } elseif ($_GET['user'] === 'signin') {
